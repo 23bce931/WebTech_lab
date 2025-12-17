@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vineetha Jakkilinki | AI Portfolio</title>
+    <style>
+        /* 1. High-Tech Color Palette */
+        :root {
+            --bg-dark: #0a0b10;      /* Deep Space */
+            --bg-card: #161b22;      /* Dark Grey/Blue */
+            --accent-primary: #a29bfe; /* Soft Violet */
+            --accent-glow: #00d2ff;    /* Cyber Cyan */
+            --text-bright: #ffffff;
+            --text-dim: #b1b1b1;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-bright);
+            line-height: 1.7;
+        }
+
+        /* 2. Modern Header with Gradient & Glow */
+        header {
+            background: linear-gradient(135deg, #1e1e2f 0%, #0a0b10 100%);
+            padding: 100px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative "AI Orbit" effect in background */
+        header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(162,155,254,0.05) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 3.5rem;
+            background: linear-gradient(to right, var(--accent-primary), var(--accent-glow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            z-index: 1;
+            position: relative;
+        }
+
+        header p {
+            font-size: 1.3rem;
+            color: var(--accent-glow);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 300;
+            margin-top: 10px;
+            z-index: 1;
+            position: relative;
+        }
+
+        /* 3. Section Styling */
+        section {
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 0 25px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h2::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* About Section */
+        #about p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        /* 4. Skills Section - Neon Tags */
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            padding: 0;
+            gap: 12px;
+        }
+
+        .skills-list li {
+            background: rgba(162, 155, 254, 0.1);
+            border: 1px solid rgba(162, 155, 254, 0.3);
+            padding: 6px 20px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: var(--accent-primary);
+            transition: 0.3s;
+        }
+
+        .skills-list li:hover {
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--accent-primary);
+        }
+
+        /* 5. Project Grid - Cards */
+        .project-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .project-card:hover {
+            border-color: var(--accent-glow);
+            transform: scale(1.03);
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.1);
+        }
+
+        .project-card h3 {
+            margin-top: 0;
+            color: var(--accent-glow);
+        }
+
+        .project-card p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        /* 6. Futuristic Footer */
+        footer {
+            background: #050507;
+            padding: 60px 20px;
+            text-align: center;
+            margin-top: 100px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-size: 1.2rem;
+            border-bottom: 1px dashed var(--accent-primary);
+            transition: 0.3s;
+        }
+
+        footer a:hover {
+            color: var(--accent-glow);
+            border-color: var(--accent-glow);
+        }
+
+        .copy {
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Vineetha Jakkilinki</h1>
+        <p>AI & Machine Learning Explorer</p>
+    </header>
+
+    <section id="about">
+        <h2>About Me</h2>
+        <p>
+            I am a student developer deeply passionate about the AIML field. My journey involves exploring the foundations of Artificial Intelligence, from the mechanics of Machine Learning to the complexities of Deep Learning. Beyond the data, I enjoy building structured and responsive web interfaces. Currently, I am seeking internships where I can apply my neural network knowledge and coding skills to solve real-world problems.
+        </p>
+    </section>
+
+    <section id="skills">
+        <h2>Technical Arsenal</h2>
+        <ul class="skills-list">
+            <li>Python</li>
+            <li>Java</li>
+            <li>TensorFlow</li>
+            <li>Keras</li>
+            <li>Scikit-Learn</li>
+            <li>NumPy & Pandas</li>
+            <li>Matplotlib</li>
+            <li>HTML5 & CSS3</li>
+            <li>JavaScript</li>
+            <li>AWS Cloud</li>
+            <li>Git & GitHub</li>
+        </ul>
+    </section>
+
+    <section id="projects">
+        <h2>Featured Work</h2>
+        <div class="project-container">
+            <div class="project-card">
+                <h3>01. ML Data Analysis</h3>
+                <p>Using Pandas and Matplotlib to uncover patterns in large datasets and visualize statistical trends with high accuracy.</p>
+            </div>
+            <div class="project-card">
+                <h3>02. Neural Network Model</h3>
+                <p>Built a basic classification model using TensorFlow and Keras to identify patterns in image datasets.</p>
+            </div>
+            <div class="project-card">
+                <h3>03. Interactive Web Modules</h3>
+                <p>A collection of responsive web components built with HTML, CSS, and JS, focusing on clean UI for data presentation.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Ready to innovate?</p>
+        <p><a href="mailto:vineetha.23bce9319@vitapstudent.ac.in">vineetha.23bce9319@vitapstudent.ac.in</a></p>
+        <p class="copy">&copy; 2025 Vineetha Jakkilinki. Built for the future.</p>
+    </footer>
+
+</body>
+</html>
