@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimedia Hub | Fixed</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+
+        .container { width: 100%; max-width: 800px; }
+
+        .player-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        h2 { color: var(--accent-blue); margin-top: 0; }
+
+        /* Adjusted Video Frame Height */
+        .video-container {
+            width: 100%;
+            height: 400px; /* You can change this value to adjust height */
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Keeps the video aspect ratio within the frame */
+        }
+
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .current-time { font-family: monospace; color: var(--accent-red); font-size: 1.2rem; }
+
+        audio { width: 100%; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="player-card">
+        <h2>Doraemon Video</h2>
+        <div class="video-container">
+            <video id="myVideo" controls>
+                <source src="doraemon_video.mp4.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="info-bar">
+            <span>Current Playback Time</span>
+            <span id="vTime" class="current-time">0:00</span>
+        </div>
+    </div>
+
+    <div class="player-card">
+        <h2>Shinchan Audio</h2>
+        <audio id="myAudio" controls>
+            <source src="Shinchan Theme Song In Tamil-Downringtone.com.mp3" type="audio/mpeg">
+        </audio>
+        <div class="info-bar">
+            <span>Current Playback Time</span>
+            <span id="aTime" class="current-time">0:00</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    const v = document.getElementById('myVideo');
+    const a = document.getElementById('myAudio');
+
+    function format(s) {
+        let m = Math.floor(s / 60);
+        let sec = Math.floor(s % 60);
+        return m + ":" + (sec < 10 ? '0' : '') + sec;
+    }
+
+    v.ontimeupdate = () => { document.getElementById('vTime').innerText = format(v.currentTime); };
+    a.ontimeupdate = () => { document.getElementById('aTime').innerText = format(a.currentTime); };
+    
+    // Debugging helper: Check if the file is actually loading
+    v.onerror = () => { console.error("Video failed to load. Check the file name and path."); };
+</script>
+
+</body>
+</html>
