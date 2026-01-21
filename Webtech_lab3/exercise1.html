@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Adaptive Registration System</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
+        .form-container { max-width: 450px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .error-msg { color: #d9534f; font-size: 0.85rem; margin-top: 5px; display: none; }
+        .invalid { border-color: #d9534f; background-color: #fff8f8; }
+        .valid { border-color: #5cb85c; }
+        #skillsSection { display: none; } /* Hidden by default */
+        button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .role-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; background: #eee; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>User Registration</h2>
+    <form id="registrationForm" novalidate>
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="John Doe">
+            <div class="error-msg" id="nameError">Name is required (min 3 chars).</div>
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="email@domain.com">
+            <div class="error-msg" id="emailError">Please enter a valid email address.</div>
+        </div>
+
+        <div class="form-group">
+            <label>Role</label>
+            <select id="role">
+                <option value="Student">Student</option>
+                <option value="Teacher">Teacher</option>
+                <option value="Admin">Admin</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="skillsSection">
+            <label>Skills / Department</label>
+            <textarea id="skills" rows="2"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Age</label>
+            <input type="number" id="age">
+            <div class="error-msg" id="ageError">Age requirements not met for this role.</div>
+        </div>
+
+        <div class="form-group">
+            <label>Password <span id="passHint" class="role-badge">Basic</span></label>
+            <input type="password" id="password">
+            <div class="error-msg" id="passwordError">Password is too weak for your role.</div>
+        </div>
+
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" id="confirmPassword">
+            <div class="error-msg" id="confirmError">Passwords do not match.</div>
+        </div>
+
+        <button type="submit" id="submitBtn">Register</button>
+    </form>
+</div>
+<script>
+const form = document.getElementById('registrationForm');
+const roleSelect = document.getElementById('role');
+const skillsSection = document.getElementById('skillsSection');
+const submitBtn = document.getElementById('submitBtn');
+
+// 1. Dynamic Role Configuration
+const roleRules = {
+    Student: { minAge: 16, passRegex: /.{6,}/, hint: "Min 6 chars" },
+    Teacher: { minAge: 22, passRegex: /^(?=.*[A-Za-z])(?=.*\d).{8,}$/, hint: "8+ chars, 1 Letter, 1 Number" },
+    Admin:   { minAge: 25, passRegex: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{10,}$/, hint: "10+ chars, Uppercase, Number, Special Char" }
+};
+
+// 2. DOM Helper: Toggle Skills Field based on Role
+roleSelect.addEventListener('change', () => {
+    const role = roleSelect.value;
+    skillsSection.style.display = (role === 'Teacher' || role === 'Student') ? 'block' : 'none';
+    document.getElementById('passHint').innerText = roleRules[role].hint;
+    validateForm(); // Re-validate on role switch
+});
+
+// 3. Validation Logic Functions
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function updateUI(element, isValid, errorId) {
+    const errorEl = document.getElementById(errorId);
+    if (isValid) {
+        element.classList.remove('invalid');
+        element.classList.add('valid');
+        errorEl.style.display = 'none';
+    } else {
+        element.classList.add('invalid');
+        element.classList.remove('valid');
+        errorEl.style.display = 'block';
+    }
+}
+
+// 4. Main Validation Engine
+function validateForm() {
+    const role = roleSelect.value;
+    const rules = roleRules[role];
+    
+    const name = document.getElementById('name');
+    const email = document.getElementById('email');
+    const age = document.getElementById('age');
+    const password = document.getElementById('password');
+    const confirm = document.getElementById('confirmPassword');
+
+    const isNameValid = name.value.trim().length >= 3;
+    const isEmailValid = validateEmail(email.value);
+    const isAgeValid = parseInt(age.value) >= rules.minAge;
+    const isPassValid = rules.passRegex.test(password.value);
+    const isMatch = password.value === confirm.value && confirm.value !== "";
+
+    // Update UI dynamically
+    updateUI(name, isNameValid, 'nameError');
+    updateUI(email, isEmailValid, 'emailError');
+    updateUI(age, isAgeValid, 'ageError');
+    updateUI(password, isPassValid, 'passwordError');
+    updateUI(confirm, isMatch, 'confirmError');
+
+    // 5. Prevent submission until all valid
+    const allValid = isNameValid && isEmailValid && isAgeValid && isPassValid && isMatch;
+    submitBtn.disabled = !allValid;
+    
+    return allValid;
+}
+
+// 6. Listeners for real-time feedback
+form.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', validateForm);
+});
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+        alert("Registration Successful! Welcome " + roleSelect.value);
+        form.reset();
+        validateForm(); // Reset states
+    }
+});
+</script>
+</body>
+</html>

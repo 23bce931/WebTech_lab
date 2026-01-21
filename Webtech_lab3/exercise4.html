@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Monitor Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --panel: #16161e;
+            --accent: #00f2ff;
+            --warning: #ff0055;
+            --text: #c0caf5;
+            --terminal: #1a1b26;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar Control Panel */
+        .sidebar {
+            width: 320px;
+            background: var(--panel);
+            border-right: 1px solid rgba(0, 242, 255, 0.1);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .status-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .warning-active {
+            border-left-color: var(--warning);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 85, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 0, 85, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 85, 0); }
+        }
+
+        /* Monitor Area */
+        .main-view {
+            flex-grow: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .interaction-zone {
+            height: 200px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px dashed rgba(0, 242, 255, 0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--accent);
+            cursor: crosshair;
+        }
+
+        /* Log Terminal */
+        .log-terminal {
+            flex-grow: 1;
+            background: var(--terminal);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column-reverse; /* Newest logs at top */
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            gap: 15px;
+        }
+
+        .log-time { color: #565f89; }
+        .log-type { color: var(--accent); font-weight: 600; min-width: 80px; }
+        .log-desc { color: var(--text); }
+
+        /* Buttons */
+        .btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn:hover { background: var(--accent); color: var(--bg); }
+        .btn-danger { border-color: var(--warning); color: var(--warning); }
+        .btn-danger:hover { background: var(--warning); color: var(--bg); }
+
+        #alertBanner {
+            display: none;
+            background: var(--warning);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            position: absolute;
+            top: 0; left: 0; right: 0;
+        }
+    </style>
+</head>
+<body id="monitorBody">
+
+    <div id="alertBanner">SUSPICIOUS ACTIVITY DETECTED: EXCESSIVE CLICKS</div>
+
+    <aside class="sidebar">
+        <h2 style="margin:0; color:var(--accent)">OBSERVER <span style="font-weight:300">v1.0</span></h2>
+        
+        <div class="status-card" id="statusCard">
+            <div style="font-size: 0.8rem; color: #565f89;">EVENT COUNT</div>
+            <div id="eventCount" style="font-size: 2rem; font-weight: bold;">0</div>
+        </div>
+
+        <div style="margin-top: auto; display:flex; flex-direction:column; gap:10px;">
+            <button class="btn" onclick="exportLog()">Export Log (.txt)</button>
+            <button class="btn btn-danger" onclick="resetLog()">Clear Data</button>
+        </div>
+    </aside>
+
+    <main class="main-view">
+        <div class="interaction-zone" id="captureZone">
+            <h3>INTERACTION ZONE<br><small style="font-size:0.8rem; opacity:0.6">Click, Type, or Focus here</small></h3>
+        </div>
+
+        <div class="log-terminal" id="terminal">
+            </div>
+    </main>
+
+<script>
+    // 1 & 2. State & Storage
+    let activityLog = [];
+    const CLICK_THRESHOLD = 10; // Clicks in 5 seconds
+    let clickCounter = 0;
+
+    const terminal = document.getElementById('terminal');
+    const eventCountDisplay = document.getElementById('eventCount');
+    const statusCard = document.getElementById('statusCard');
+    const alertBanner = document.getElementById('alertBanner');
+
+    // 3. Event Bubbling & Capturing Demonstration
+    // We listen on the body (Bubbling) and the specific zone (Direct)
+    
+    function logActivity(type, description) {
+        const entry = {
+            time: new Date().toLocaleTimeString(),
+            type: type,
+            desc: description,
+            timestamp: Date.now()
+        };
+        
+        activityLog.push(entry);
+        renderLog(entry);
+        checkSecurity();
+    }
+
+    // 4. Dynamic DOM Display
+    function renderLog(entry) {
+        const div = document.createElement('div');
+        div.className = 'log-entry';
+        div.innerHTML = `
+            <span class="log-time">[${entry.time}]</span>
+            <span class="log-type">${entry.type.toUpperCase()}</span>
+            <span class="log-desc">${entry.desc}</span>
+        `;
+        terminal.prepend(div);
+        eventCountDisplay.innerText = activityLog.length;
+    }
+
+    // --- EVENT LISTENERS ---
+
+    // Track Clicks (Bubbling)
+    document.addEventListener('click', (e) => {
+        const target = e.target.tagName + (e.target.id ? `#${e.target.id}` : '');
+        logActivity('Click', `Target: ${target} at X:${e.pageX} Y:${e.pageY}`);
+        
+        // Security logic for click spam
+        clickCounter++;
+        setTimeout(() => clickCounter--, 5000); 
+    }, false);
+
+    // Track Key Presses
+    document.addEventListener('keydown', (e) => {
+        logActivity('Keydown', `Key Pressed: "${e.key}"`);
+    });
+
+    // Track Focus Changes (Using Capturing because focus doesn't bubble)
+    document.addEventListener('focus', (e) => {
+        logActivity('Focus', `Element Focused: ${e.target.tagName}`);
+    }, true);
+
+    // 5. Suspicious Activity Thresholds
+    function checkSecurity() {
+        if (clickCounter > CLICK_THRESHOLD) {
+            statusCard.classList.add('warning-active');
+            alertBanner.style.display = 'block';
+        } else {
+            statusCard.classList.remove('warning-active');
+            alertBanner.style.display = 'none';
+        }
+    }
+
+    // 6. Reset & Export
+    function resetLog() {
+        activityLog = [];
+        terminal.innerHTML = '';
+        eventCountDisplay.innerText = '0';
+        statusCard.classList.remove('warning-active');
+        alertBanner.style.display = 'none';
+        logActivity('System', 'Log initialized and cleared.');
+    }
+
+    function exportLog() {
+        let text = "USER ACTIVITY LOG\n====================\n";
+        activityLog.forEach(log => {
+            text += `[${log.time}] ${log.type}: ${log.desc}\n`;
+        });
+        
+        const blob = new Blob([text], { type: 'text/plain' });
+        const anchor = document.createElement('a');
+        anchor.download = 'activity_report.txt';
+        anchor.href = (window.URL || window.webkitURL).createObjectURL(blob);
+        anchor.click();
+    }
+
+    // Initial System Log
+    logActivity('System', 'Monitoring Active. Waiting for user interaction...');
+</script>
+</body>
+</html>

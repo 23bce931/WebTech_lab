@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Cart Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #8b5cf6;
+            --accent-glow: rgba(139, 92, 246, 0.3);
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --danger: #f43f5e;
+            --success: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            width: 95%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 2rem;
+            padding: 20px;
+        }
+
+        /* Inventory & Cart Section */
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 { font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        .accent-text { color: var(--accent); }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 2rem;
+        }
+
+        .product-chip {
+            background: rgba(255,255,255,0.05);
+            padding: 1rem;
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .product-chip:hover {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        /* Cart Items Table */
+        .cart-table { width: 100%; border-collapse: collapse; }
+        .cart-table th { text-align: left; color: var(--text-dim); font-weight: 400; padding-bottom: 1rem; }
+        .cart-item { border-top: 1px solid rgba(255,255,255,0.05); }
+        .cart-item td { padding: 1.2rem 0; }
+        
+        .qty-control {
+            display: flex;
+            align-items: center;
+            background: #0f172a;
+            width: fit-content;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .btn-qty {
+            background: none; border: none; color: white; padding: 8px 12px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-qty:hover { background: var(--accent); }
+        .qty-val { padding: 0 10px; font-weight: 600; }
+
+        /* Summary Panel */
+        .summary-panel { position: sticky; top: 20px; height: fit-content; }
+        
+        .row { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+        .total-row { font-size: 1.5rem; font-weight: 700; border-top: 1px solid rgba(255,255,255,0.1); pt: 1rem; margin-top: 1rem; }
+
+        .coupon-box {
+            background: #0f172a;
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 5px;
+            display: flex;
+            margin: 1.5rem 0;
+        }
+
+        .coupon-box input {
+            background: none; border: none; color: white; padding: 10px; flex-grow: 1; outline: none;
+        }
+
+        .discount-badge {
+            background: var(--success);
+            color: white;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 20px var(--accent-glow);
+            transition: 0.3s;
+        }
+
+        .checkout-btn:hover { opacity: 0.9; transform: scale(1.02); }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="glass-card">
+        <h2><span class="accent-text">Store</span> Inventory</h2>
+        <div class="inventory-grid" id="inventory">
+            </div>
+
+        <h2>Your <span class="accent-text">Cart</span></h2>
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="cartBody">
+                </tbody>
+        </table>
+    </div>
+
+    <div class="glass-card summary-panel">
+        <h3>Order Summary</h3>
+        <div id="summaryItems">
+            </div>
+
+        <div class="coupon-box">
+            <input type="text" id="couponCode" placeholder="Promo Code (SAVE10/20/30)" oninput="updateCart()">
+        </div>
+        <div id="couponStatus"></div>
+
+        <div class="total-row row">
+            <span>Total</span>
+            <span id="grandTotal">$0.00</span>
+        </div>
+        <button class="checkout-btn">Complete Purchase</button>
+    </div>
+</div>
+
+<script>
+    // 1. Data Store
+    const products = [
+        { id: 1, name: "Smart Watch", price: 250, category: "Electronics", icon: "⌚" },
+        { id: 2, name: "AirPods Pro", price: 199, category: "Electronics", icon: "🎧" },
+        { id: 3, name: "Designer Bag", price: 120, category: "Fashion", icon: "👜" },
+        { id: 4, name: "Running Shoes", price: 85, category: "Fashion", icon: "👟" }
+    ];
+
+    let cart = [];
+
+    // 2. Initial Setup
+    function init() {
+        const inv = document.getElementById('inventory');
+        products.forEach(p => {
+            inv.innerHTML += `
+                <div class="product-chip" onclick="addToCart(${p.id})">
+                    <div style="font-size: 1.5rem">${p.icon}</div>
+                    <div style="font-weight:600; margin: 5px 0">${p.name}</div>
+                    <div class="accent-text">$${p.price}</div>
+                </div>
+            `;
+        });
+        updateCart();
+    }
+
+    // 3. Cart Logic
+    function addToCart(productId) {
+        const product = products.find(p => p.id === productId);
+        const cartItem = cart.find(item => item.id === productId);
+
+        if (cartItem) {
+            cartItem.quantity++;
+        } else {
+            cart.push({ ...product, quantity: 1 });
+        }
+        updateCart();
+    }
+
+    function changeQty(id, delta) {
+        const item = cart.find(i => i.id === id);
+        if (item) {
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                cart = cart.filter(i => i.id !== id);
+            }
+        }
+        updateCart();
+    }
+
+    // 4. Rule-Driven Discount Engine
+    function updateCart() {
+        const cartBody = document.getElementById('cartBody');
+        const summary = document.getElementById('summaryItems');
+        const couponInput = document.getElementById('couponCode').value.toUpperCase();
+        
+        cartBody.innerHTML = '';
+        let subtotal = 0;
+        let discountInfo = [];
+
+        cart.forEach(item => {
+            const lineTotal = item.price * item.quantity;
+            subtotal += lineTotal;
+
+            cartBody.innerHTML += `
+                <tr class="cart-item">
+                    <td>
+                        <div style="font-weight:600">${item.name}</div>
+                        <div style="font-size:0.7rem; color:var(--text-dim)">${item.category}</div>
+                    </td>
+                    <td>$${item.price}</td>
+                    <td>
+                        <div class="qty-control">
+                            <button class="btn-qty" onclick="changeQty(${item.id}, -1)">-</button>
+                            <span class="qty-val">${item.quantity}</span>
+                            <button class="btn-qty" onclick="changeQty(${item.id}, 1)">+</button>
+                        </div>
+                    </td>
+                    <td>$${lineTotal.toFixed(2)}</td>
+                </tr>
+            `;
+        });
+
+        let totalSavings = 0;
+
+        // Requirement: Bulk Discount (Buy 3+ of any item, 15% off that item)
+        cart.forEach(item => {
+            if (item.quantity >= 3) {
+                const saving = (item.price * item.quantity) * 0.15;
+                totalSavings += saving;
+                discountInfo.push({ name: `Bulk (${item.name})`, amount: saving });
+            }
+        });
+
+        // Requirement: Category Discount (Electronics extra $10 off if subtotal > $400)
+        const electronicsCount = cart.filter(i => i.category === 'Electronics').length;
+        if (subtotal > 400 && electronicsCount > 0) {
+            totalSavings += 10;
+            discountInfo.push({ name: 'Electronics Bonus', amount: 10 });
+        }
+
+        // Requirement: Time of Day (Night Owl Sale: 9PM - 12AM = 5% off everything)
+        const hour = new Date().getHours();
+        if (hour >= 21) {
+            const nightSaving = subtotal * 0.05;
+            totalSavings += nightSaving;
+            discountInfo.push({ name: 'Night Owl Sale', amount: nightSaving });
+        }
+
+        // Requirement: String parsing for Coupons (e.g., SAVE30)
+        if (couponInput.startsWith("SAVE")) {
+            const numPart = couponInput.replace("SAVE", ""); // String method
+            const discountPercent = parseInt(numPart);
+            if (!isNaN(discountPercent) && discountPercent > 0 && discountPercent <= 50) {
+                const couponSaving = (subtotal - totalSavings) * (discountPercent / 100);
+                totalSavings += couponSaving;
+                discountInfo.push({ name: `Coupon ${discountPercent}%`, amount: couponSaving });
+            }
+        }
+
+        // Update Summary Display
+        summary.innerHTML = `<div class="row"><span>Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>`;
+        discountInfo.forEach(d => {
+            summary.innerHTML += `
+                <div class="row">
+                    <span class="discount-badge">${d.name}</span>
+                    <span style="color:var(--success)">-$${d.amount.toFixed(2)}</span>
+                </div>
+            `;
+        });
+
+        document.getElementById('grandTotal').innerText = `$${Math.max(0, subtotal - totalSavings).toFixed(2)}`;
+    }
+
+    init();
+</script>
+</body>
+</html>
