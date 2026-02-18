@@ -1,0 +1,30 @@
+[
+    {
+        "id": "P001",
+        "name": "iPhone 15 Pro",
+        "category": "Electronics",
+        "price": 999,
+        "stock": 25
+    },
+    {
+        "id": "P002",
+        "name": "MacBook Air M2",
+        "category": "Electronics",
+        "price": 1299,
+        "stock": 12
+    },
+    {
+        "id": "P003",
+        "name": "Nike Air Max",
+        "category": "Footwear",
+        "price": 129,
+        "stock": 45
+    },
+    {
+        "id": "P004",
+        "name": "Office Chair",
+        "category": "Furniture",
+        "price": 299,
+        "stock": 8
+    }
+]
