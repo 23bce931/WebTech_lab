@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Cyber Inventory System</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="matrix-bg"></div>
+    <div class="container">
+        <header class="cyber-header">
+            <div class="logo">
+                <span class="neon-text">INVENTORY</span>
+                <span class="neon-text sub">v2.0 - CYBERNETIC</span>
+            </div>
+            <div class="stats-panel">
+                <div class="stat-item">
+                    <span class="stat-label">Total Value</span>
+                    <span id="totalValue" class="stat-value">$0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Products</span>
+                    <span id="totalProducts" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Low Stock</span>
+                    <span id="lowStock" class="stat-value">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Notification System -->
+        <div id="notification" class="notification"></div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="search-section">
+                <input type="text" id="searchInput" placeholder="🔍 Search by category (Electronics, Footwear...)">
+                <button id="clearSearch" class="btn-minimal">Clear</button>
+            </div>
+            <div class="add-section">
+                <button id="addProductBtn" class="btn-glow">➕ New Product</button>
+            </div>
+        </div>
+
+        <!-- Product Form Modal -->
+        <div id="productModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Add Product</h3>
+                    <button id="closeModal" class="close-btn">×</button>
+                </div>
+                <form id="productForm">
+                    <div class="form-grid">
+                        <div class="cyber-input">
+                            <label>ID (P005)</label>
+                            <input type="text" id="productId" required>
+                        </div>
+                        <div class="cyber-input">
+                            <label>Name</label>
+                            <input type="text" id="productName" required>
+                        </div>
+                        <div class="cyber-input">
+                            <label>Category</label>
+                            <input type="text" id="productCategory" required>
+                        </div>
+                        <div class="cyber-input">
+                            <label>Price ($)</label>
+                            <input type="number" id="productPrice" min="0" step="0.01" required>
+                        </div>
+                        <div class="cyber-input">
+                            <label>Stock</label>
+                            <input type="number" id="productStock" min="0" required>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn-primary">Save Product</button>
+                        <button type="button" id="cancelForm" class="btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Inventory Grid -->
+        <div class="inventory-grid" id="inventoryGrid">
+            <div class="loading-state">
+                <div class="matrix-loader"></div>
+                <span>INITIALIZING INVENTORY...</span>
+            </div>
+            <div class="no-data-state hidden">
+                <div class="no-data-icon">📦</div>
+                <span>NO PRODUCTS FOUND</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

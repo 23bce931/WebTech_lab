@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employees>
+    <employee>
+        <id>E001</id>
+        <name>Rahul Sharma</name>
+        <department>IT</department>
+        <salary>75000</salary>
+    </employee>
+    <employee>
+        <id>E002</id>
+        <name>Priya Patel</name>
+        <department>HR</department>
+        <salary>65000</salary>
+    </employee>
+    <employee>
+        <id>E003</id>
+        <name>Amit Kumar</name>
+        <department>Finance</department>
+        <salary>80000</salary>
+    </employee>
+</employees>

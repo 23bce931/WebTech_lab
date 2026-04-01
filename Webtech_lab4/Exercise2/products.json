@@ -1,0 +1,42 @@
+[
+    {
+        "name": "MacBook Pro 14-inch",
+        "price": 1999,
+        "category": "Laptops"
+    },
+    {
+        "name": "iPhone 15 Pro Max",
+        "price": 1199,
+        "category": "Smartphones"
+    },
+    {
+        "name": "AirPods Pro 2",
+        "price": 249,
+        "category": "Headphones"
+    },
+    {
+        "name": "Samsung Galaxy S24",
+        "price": 899,
+        "category": "Smartphones"
+    },
+    {
+        "name": "Nike Air Max 90",
+        "price": 129,
+        "category": "Shoes"
+    },
+    {
+        "name": "Dell XPS 13",
+        "price": 1099,
+        "category": "Laptops"
+    },
+    {
+        "name": "Sony WH-1000XM5",
+        "price": 399,
+        "category": "Headphones"
+    },
+    {
+        "name": "Adidas Ultraboost",
+        "price": 189,
+        "category": "Shoes"
+    }
+]

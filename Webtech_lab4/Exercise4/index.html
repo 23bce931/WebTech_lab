@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌤️ AJAX Weather Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🌤️ Weather Dashboard</h1>
+        
+        <div class="search-box">
+            <input 
+                type="text" 
+                id="cityInput" 
+                placeholder="Enter city name (e.g., London, New York, Mumbai)"
+                value=""
+            >
+            <button id="searchBtn">Search Weather</button>
+            <div id="loadingSpinner" class="loading hidden"></div>
+        </div>
+
+        <div id="errorMessage" class="error hidden"></div>
+
+        <div id="weatherContainer" class="weather-container hidden">
+            <div class="city-name" id="cityName"></div>
+            <div class="weather-main" id="weatherMain"></div>
+            <div class="temperature" id="temperature"></div>
+            <div class="details">
+                <div class="detail-item">
+                    <span class="label">Humidity</span>
+                    <span class="value" id="humidity"></span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">Condition</span>
+                    <span class="value" id="condition"></span>
+                </div>
+            </div>
+            <div class="last-search">
+                Last searched: <span id="lastCity"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Survey Architect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #eef2ff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --error: #f43f5e;
+            --success: #10b981;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+
+        .survey-card {
+            background: white;
+            width: 100%;
+            max-width: 650px;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        header { margin-bottom: 32px; border-bottom: 2px solid var(--primary-light); padding-bottom: 20px; }
+        header h1 { margin: 0; font-size: 1.75rem; color: var(--primary); }
+        header p { margin: 8px 0 0; color: var(--text-muted); }
+
+        .question-block { margin-bottom: 28px; transition: all 0.3s ease; }
+        .question-label { display: block; font-weight: 600; margin-bottom: 12px; font-size: 1rem; }
+        .required-star { color: var(--error); margin-left: 4px; }
+
+        /* Input Styling */
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { outline: none; border-color: var(--primary); }
+
+        .option-group { display: flex; flex-direction: column; gap: 10px; }
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .option-item:hover { background: var(--primary-light); border-color: var(--primary); }
+        .option-item input { margin-right: 12px; width: 18px; height: 18px; }
+
+        /* Validation Messages */
+        .error-hint {
+            color: var(--error);
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .invalid input[type="text"] { border-color: var(--error); }
+        .invalid .error-hint { display: block; }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover { background: #4f46e5; transform: translateY(-2px); }
+        .submit-btn:active { transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+<div class="survey-card">
+    <header>
+        <h1>Product Feedback</h1>
+        <p>Help us improve your experience with a few details.</p>
+    </header>
+
+    <form id="dynamicSurvey" novalidate>
+        <div id="surveyContainer"></div>
+        <button type="submit" class="submit-btn">Complete Survey</button>
+    </form>
+</div>
+
+<script>
+    // 1. Structure: Storing questions and their metadata
+    const surveySchema = [
+        {
+            id: "userName",
+            type: "text",
+            label: "What is your full name?",
+            required: true,
+            placeholder: "e.g. Alex Smith",
+            validation: (val) => val.trim().length >= 3,
+            errorMsg: "Please enter your full name (min 3 characters)."
+        },
+        {
+            id: "usageFreq",
+            type: "radio",
+            label: "How often do you use our app?",
+            required: true,
+            options: ["Daily", "Weekly", "Monthly", "Rarely"],
+            errorMsg: "Please select an option."
+        },
+        {
+            id: "features",
+            type: "checkbox",
+            label: "Which features do you value most? (Select at least 2)",
+            required: true,
+            options: ["Speed", "Design", "Security", "Support", "Price"],
+            minSelect: 2,
+            errorMsg: "Please select at least 2 features."
+        },
+        {
+            id: "feedback",
+            type: "textarea",
+            label: "Additional Comments",
+            required: false,
+            limit: 200,
+            placeholder: "Tell us more...",
+            errorMsg: "Stay within 200 characters."
+        }
+    ];
+
+    const container = document.getElementById('surveyContainer');
+
+    // 2. Generation Logic: Building DOM fields based on type
+    function buildSurvey() {
+        surveySchema.forEach(q => {
+            const block = document.createElement('div');
+            block.className = 'question-block';
+            block.id = `block-${q.id}`;
+
+            let html = `<label class="question-label">${q.label}${q.required ? '<span class="required-star">*</span>' : ''}</label>`;
+
+            if (q.type === 'text' || q.type === 'textarea') {
+                const inputTag = q.type === 'text' ? 'input' : 'textarea';
+                html += `<${inputTag} type="text" id="${q.id}" placeholder="${q.placeholder}"></${inputTag}>`;
+            } 
+            else if (q.type === 'radio' || q.type === 'checkbox') {
+                html += `<div class="option-group">`;
+                q.options.forEach(opt => {
+                    html += `
+                        <label class="option-item">
+                            <input type="${q.type}" name="${q.id}" value="${opt}">
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+                html += `</div>`;
+            }
+
+            html += `<div class="error-hint">${q.errorMsg}</div>`;
+            block.innerHTML = html;
+            container.appendChild(block);
+        });
+    }
+
+    // 3 & 4. Validation Engine
+    function validateForm() {
+        let isFormValid = true;
+
+        surveySchema.forEach(q => {
+            let isValid = true;
+            const block = document.getElementById(`block-${q.id}`);
+
+            if (q.type === 'text' || q.type === 'textarea') {
+                const val = document.getElementById(q.id).value;
+                if (q.required && !val) isValid = false;
+                if (q.validation && !q.validation(val)) isValid = false;
+                if (q.limit && val.length > q.limit) isValid = false;
+            } 
+            else if (q.type === 'radio') {
+                const checked = document.querySelector(`input[name="${q.id}"]:checked`);
+                if (q.required && !checked) isValid = false;
+            } 
+            else if (q.type === 'checkbox') {
+                const checkedCount = document.querySelectorAll(`input[name="${q.id}"]:checked`).length;
+                if (q.required && q.minSelect && checkedCount < q.minSelect) isValid = false;
+            }
+
+            // 5. DOM Manipulation for Feedback
+            if (!isValid) {
+                block.classList.add('invalid');
+                isFormValid = false;
+            } else {
+                block.classList.remove('invalid');
+            }
+        });
+
+        return isFormValid;
+    }
+
+    // 6. Prevent submission
+    document.getElementById('dynamicSurvey').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        if (validateForm()) {
+            alert("Survey submitted successfully! Thank you for your feedback.");
+            console.log("Collected Data:", new FormData(e.target));
+        } else {
+            // Smooth scroll to the first error
+            document.querySelector('.invalid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+
+    buildSurvey();
+</script>
+
+</body>
+</html>

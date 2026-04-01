@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Card - Thumbs Up</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background-color: white;
+            width: 300px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            margin: 20px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Styling the Product Image */
+        .card img {
+            width: 100%;
+            height: 250px; /* Adjusted height for the thumbs up image */
+            object-fit: contain; /* Shows the full image without cropping */
+            background-color: #fff;
+            padding-top: 10px;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .product-title {
+            font-size: 1.4em;
+            margin: 0;
+            color: #333;
+        }
+
+        .product-description {
+            font-size: 0.9em;
+            color: #666;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+
+        .price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+
+        .buy-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #28a745; /* Changed to green to match the 'positive' theme */
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .buy-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <img src="https://m.media-amazon.com/images/I/71G2SXt2hrL._AC_UF350,350_QL80_.jpg" alt="Thumbs Up">
+        
+        <div class="card-content">
+            <h2 class="product-title">Thumbs Up</h2>
+            <p class="product-description">
+                A symbol of positivity and approval. Perfect for high-fives, social media likes, and showing your support!
+            </p>
+
+            <div class="price">₹50</div>
+
+            <button class="buy-btn">Buy Now</button>
+        </div>
+    </div>
+
+</body>
+</html>

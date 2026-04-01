@@ -1,0 +1,20 @@
+[
+    {
+        "id": "S001",
+        "name": "Rahul Sharma",
+        "course": "Computer Science",
+        "marks": 85
+    },
+    {
+        "id": "S002",
+        "name": "Priya Patel",
+        "course": "Mathematics",
+        "marks": 92
+    },
+    {
+        "id": "S003",
+        "name": "Amit Kumar",
+        "course": "Physics",
+        "marks": 78
+    }
+]
